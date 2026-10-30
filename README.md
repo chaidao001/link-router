@@ -1,6 +1,6 @@
 # Link Router
 
-A native macOS menu bar app that sends links from Slack to Island and other web links to Google Chrome.
+A native macOS menu bar app that sends links from Slack and Outlook to Island and other web links to Google Chrome.
 
 ![Link Router icon](Assets/preview.png)
 
@@ -29,18 +29,18 @@ The logo shows one connection splitting into two destinations: teal and lavender
 
 Run `bash generate-icons.sh` to regenerate the PNG, ICNS, and PDF assets from the native vector renderer.
 
-- `Assets/link-router.svg` — editable application logo.
-- `Assets/mark.svg` — standalone monochrome mark; uses `currentColor`.
-- `Assets/link-router.png` — 1024 px raster export.
-- `Assets/AppIcon.icns` — complete macOS icon sizes.
-- `Assets/MenuBarIcon.pdf` — vector menu bar icon.
-- `Tools/GenerateIcon.swift` — reproducible native renderer and icon generator.
+- `Assets/link-router.svg` - editable application logo.
+- `Assets/mark.svg` - standalone monochrome mark; uses `currentColor`.
+- `Assets/link-router.png` - 1024 px raster export.
+- `Assets/AppIcon.icns` - complete macOS icon sizes.
+- `Assets/MenuBarIcon.pdf` - vector menu bar icon.
+- `Tools/GenerateIcon.swift` - reproducible native renderer and icon generator.
 
 ## Routing behavior
 
-- Uses the originating process from the URL's Apple event. Slack and its helpers route to Island (`io.island.Island`). Other and unidentified sources route to Chrome (`com.google.Chrome`).
+- Uses the originating process from the URL's Apple event. Slack and its helpers (`com.tinyspeck.slackmacgap`) and Outlook (`com.microsoft.Outlook`) route to Island (`io.island.Island`). Other and unidentified sources route to Chrome (`com.google.Chrome`). `IslandSource` in `Sources/Routing.swift` lists the apps that route to Island.
 - Forwards the original URL through macOS APIs, preserving escaping, query parameters, and fragments.
-- Shows an error if the selected browser is unavailable. Slack links are not silently sent to another browser.
+- Shows an error if the selected browser is unavailable. Slack and Outlook links are not silently sent to another browser.
 - HTML and XHTML documents handed to the app open in Chrome.
 - Navigation inside a browser stays there. Apps that explicitly select a browser or use universal links can bypass the system handler.
 - No account, network service, Accessibility permission, Automation permission, telemetry, or persistent URL history.

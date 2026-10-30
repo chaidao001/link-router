@@ -32,13 +32,15 @@ final class RouterApp: NSObject, NSApplicationDelegate, NSMenuDelegate {
             icon.accessibilityDescription = "Link Router"
             statusItem.button?.image = icon
         }
-        statusItem.button?.toolTip = "Slack links → Island · Other web links → Chrome"
+        statusItem.button?.toolTip = "\(IslandSource.names) links → Island · Other web links → Chrome"
         let menu = NSMenu()
         menu.delegate = self
         menu.addItem(NSMenuItem(title: "Link Router", action: nil, keyEquivalent: ""))
         statusLine = NSMenuItem(title: "", action: nil, keyEquivalent: "")
         menu.addItem(statusLine)
-        menu.addItem(NSMenuItem(title: "Slack → Island", action: nil, keyEquivalent: ""))
+        for source in IslandSource.allCases {
+            menu.addItem(NSMenuItem(title: "\(source.name) → Island", action: nil, keyEquivalent: ""))
+        }
         menu.addItem(NSMenuItem(title: "Other apps → Chrome", action: nil, keyEquivalent: ""))
         menu.addItem(.separator())
         lastRouteLine = NSMenuItem(title: "No links routed this session", action: nil, keyEquivalent: "")
@@ -157,7 +159,7 @@ final class RouterApp: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         let source = Routing.sourceBundleID(of: event)
         let browser = Routing.browser(for: source)
-        let sourceName = source == Routing.slackBundleID ? "Slack" : source ?? "Unidentified app"
+        let sourceName = Routing.islandSource(for: source)?.name ?? source ?? "Unidentified app"
         lastRouteLine?.title = "Last: \(sourceName) → \(browser.name)"
 
         // Diagnostic mode exercises real URL events without opening a browser or logging URLs.
@@ -190,13 +192,13 @@ final class RouterApp: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func showSetup() {
         guard !diagnostic else { return }
         if isDefault {
-            showMessage("Link Router is enabled", "Slack links open in Island. Other web links open in Chrome.\n\nUse the Link Router icon in the menu bar to change routing or Start at Login.")
+            showMessage("Link Router is enabled", "\(IslandSource.names) links open in Island. Other web links open in Chrome.\n\nUse the Link Router icon in the menu bar to change routing or Start at Login.")
             return
         }
         NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
-        alert.messageText = "Open Slack links in Island"
-        alert.informativeText = "In System Settings → Desktop & Dock, choose Link Router as your Default web browser.\n\nSlack links will open in Island; other web links will open in Chrome. You can switch back to Google Chrome in the same setting."
+        alert.messageText = "Open \(IslandSource.names) links in Island"
+        alert.informativeText = "In System Settings → Desktop & Dock, choose Link Router as your Default web browser.\n\n\(IslandSource.names) links will open in Island; other web links will open in Chrome. You can switch back to Google Chrome in the same setting."
         alert.addButton(withTitle: "Open System Settings")
         alert.addButton(withTitle: "Not Now")
         if alert.runModal() == .alertFirstButtonReturn { enable() }
